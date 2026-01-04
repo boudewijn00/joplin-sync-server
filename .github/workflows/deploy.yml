@@ -1,0 +1,61 @@
+name: Deploy to Server
+
+on:
+  # Trigger on push to main branch
+  push:
+    branches:
+      - main
+
+  # Allow manual trigger from Actions tab
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy files to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          source: "docker-compose.yaml,init/*,README.md,CLAUDE.md,.env.example"
+          target: ${{ secrets.DEPLOY_PATH }}
+          strip_components: 0
+          overwrite: true
+
+      - name: Create .env if not exists and restart containers
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          script: |
+            cd ${{ secrets.DEPLOY_PATH }}
+
+            # Create .env from example if it doesn't exist
+            if [ ! -f .env ]; then
+              echo "Creating .env from .env.example"
+              cp .env.example .env
+              echo "⚠️  Please edit .env to set your password and configuration!"
+            fi
+
+            # Make init scripts executable
+            chmod +x init/*.sh
+
+            # Pull latest images
+            docker compose --profile server pull
+
+            # Restart containers
+            docker compose --profile server up -d
+
+            # Show status
+            docker compose ps
+
+            echo "✓ Deployment complete!"
