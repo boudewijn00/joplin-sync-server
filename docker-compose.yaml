@@ -14,7 +14,7 @@ services:
         networks:
             - app-network
         ports:
-            - "5432:5432"
+            - "25432:5432"
         restart: unless-stopped
         environment:
             - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
