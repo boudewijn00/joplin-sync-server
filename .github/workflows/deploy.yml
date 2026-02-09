@@ -24,7 +24,7 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT || 22 }}
-          source: "docker-compose.yaml,init/*,.env.example,sqitch.conf,sqitch.plan,deploy/*,revert/*,verify/*"
+          source: "docker-compose.yaml,init/*,.env.example,sqitch.conf,sqitch.plan,sqitch.sh,deploy/*,revert/*,verify/*"
           target: ${{ secrets.DEPLOY_PATH }}
           strip_components: 0
           overwrite: true
@@ -51,13 +51,13 @@ jobs:
 
             # Pull latest images
             docker compose pull
+            docker compose pull
 
             # Restart containers
             docker compose up -d
 
             # Run sqitch migrations
-            source .env
-            PGPASSWORD=$POSTGRES_PASSWORD sqitch deploy
+            ./sqitch.sh deploy
 
             # Restart database to pick up changes
             docker compose restart db
