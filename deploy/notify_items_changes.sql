@@ -1,6 +1,6 @@
--- Create notification function for items table changes
--- This function sends NOTIFY events whenever items are inserted, updated, or deleted
--- Excludes the large content field, sending only metadata
+-- Deploy joplin:notify_items_changes to pg
+
+BEGIN;
 
 CREATE OR REPLACE FUNCTION public.notify_items_changes()
  RETURNS trigger
@@ -69,5 +69,4 @@ BEGIN
 END;
 $function$;
 
--- Note: The trigger itself must be created AFTER Joplin creates the items table
--- Run the apply_trigger.sql script after starting Joplin for the first time
+COMMIT;

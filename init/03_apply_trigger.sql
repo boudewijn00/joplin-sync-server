@@ -21,12 +21,6 @@ BEGIN
 
         RAISE NOTICE 'Trigger "items_changes_trigger" created successfully on "items" table';
 
-        -- Display trigger information
-        RAISE NOTICE 'Trigger details:';
-        PERFORM trigger_name, event_manipulation, event_object_table
-        FROM information_schema.triggers
-        WHERE trigger_name = 'items_changes_trigger';
-
     ELSE
         RAISE NOTICE 'Items table does not exist yet - skipping trigger creation';
         RAISE NOTICE 'Run this script again after Joplin server has initialized';

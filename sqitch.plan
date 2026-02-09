@@ -1,0 +1,5 @@
+%syntax-version=1.0.0
+%project=joplin
+
+notify_items_changes 2026-02-09T08:04:15Z System Administrator <root@Mac.fritz.box> # Add notify_items_changes trigger function with metadata-only payload
+apply_items_trigger [notify_items_changes] 2026-02-09T08:05:35Z System Administrator <root@Mac.fritz.box> # Apply items_changes trigger to items table
